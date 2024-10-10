@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h2 {
+            margin-bottom: 30px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="text"],
+        input[type="password"] {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .button {
+            padding: 10px 20px;
+            background-color: #008CBA;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+        .register-container {
+            margin-top: 20px;
+        }
+        .register-container p {
+            display: inline;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Login</h2>
+    <form action="/login" method="post" enctype="application/x-www-form-urlencoded">
+        <input type="text" name="mail" id="mail" placeholder="Mail or Username">
+
+        <input type="password" name="password" id="password" placeholder="Password">
+
+        <input type="submit" id="button" value="Submit">
+
+        <% if (typeof loginError !== 'undefined' && loginError === true) { %>
+            <p class="error-message">Wrong fields</p>
+        <% } %>
+    </form>
+
+    <div class="register-container">
+        <p>You dont have an account ?</p>
+        <a href="/register" class="button">Register</a>
+    </div>
+
+    <script>
+        // document.getElementById("button").addEventListener("click", function(e) {
+        //     e.preventDefault();
+        // });
+    </script>
+</body>
+</html>

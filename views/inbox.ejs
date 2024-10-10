@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inbox</title>
+  <style>
+    body {
+      background-color: #e0f7fa;
+      /* Light blue theme */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .search-bar {
+      margin-top: 20px;
+      width: 300px;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .inbox-container {
+      text-align: center;
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      width: 300px;
+      margin-top: 20px;
+      /* Adjust margin to fit search bar */
+    }
+
+    .inbox-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #0077cc;
+      /* Blue color */
+      margin-bottom: 10px;
+    }
+
+    .username-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .username-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #f0f8ff;
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .username-list li:hover {
+      background-color: #b3e5fc;
+    }
+
+    .delete-btn {
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background-color: #e60000;
+    }
+
+    .logged-in-user {
+      font-size: 18px;
+      color: #0077cc;
+      cursor: pointer;
+    }
+
+    .logged-in-user:hover {
+      text-decoration: underline;
+    }
+
+    .notification-btn {
+      background-color: #0077cc;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .notification-btn:hover {
+      background-color: #005bb5;
+    }
+
+    .settings-logout {
+      position: fixed;
+      /* Fixed positioning */
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .settings-logout a {
+      text-decoration: none;
+      color: #0077cc;
+      font-size: 18px;
+    }
+
+    .settings-logout a:hover {
+      text-decoration: underline;
+    }
+
+    .settings-icon,
+    .logout-icon {
+      font-size: 24px;
+      vertical-align: middle;
+    }
+  </style>
+
+</head>
+
+<body>
+  <!-- Search Bar -->
+  <div class="search-bar">
+    <form id="form" action="/add-user" method="POST" enctype="application/x-www-form-urlencoded">
+      <input type="text" id="search-bar" name="query" placeholder="Add user...">
+    </form>
+  </div>
+  <script>
+
+  </script>
+  <!-- Inbox Container -->
+  <div class="inbox-container">
+    <div class="inbox-header">
+      Inbox - <span class="logged-in-user" onclick="window.location.href='/settings/<%= logID %>'">
+        <%= loggedUser %>
+      </span>
+      <!-- Notification Button -->
+      <button class="notification-btn" onclick="window.open('/notifications/<%= logID %>', '_blank')">🔔
+        Notification</button>
+    </div>
+
+    <!-- User List -->
+    <ul class="username-list">
+      <% if(namesData.length===0){ %>
+        <li>
+            You dont have any friends yet 
+        </li>
+        <%}else{%>
+          <% namesData?.forEach(function(user) { %>
+            <li>
+              <a href="/chats/<%= loggedUser %>-<%= user %>" target="_blank">
+                <%= user %>
+              </a>
+              <button class="delete-btn" onclick="deleteUser('<%= user %>')">Delete</button>
+            </li>
+            <% }); %>
+              <%}%>
+    </ul>
+  </div>
+
+  <!-- Settings and Logout -->
+  <div class="settings-logout">
+    <a href="/settings/<%= logID %>" class="settings-icon">⚙️ Settings</a>
+    <a href="/logout" class="logout-icon">🚪 Log out</a>
+  </div>
+
+  <script>
+
+    function deleteUser(userName) {
+      fetch('/remove-friends', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ log_id: "<%= logID %>", username: userName }),
+      })
+        .then(response => {
+          if (response.ok) {
+            alert('User succesfully deleted ! ');
+            location.reload();
+          } else {
+            alert('Something went wrong , User not deleted !');
+          }
+        });
+    }
+
+
+    document.getElementById("form").addEventListener("submit", (e) => {
+      const username = document.getElementById("search-bar");
+
+      e.preventDefault();
+      if (username.value) {
+        fetch('/add-user', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ user_id: "<%= logID %>", username: username.value }),
+        })
+          .then(response => {
+            if (response.ok) {
+              alert('Friend request sent');
+              location.reload();
+            } else {
+              alert('Not found any user  with that name');
+
+            }
+          });
+      }
+    })
+  </script>
+</body>
+
+</html>

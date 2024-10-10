@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Application</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e0f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .chat-container {
+      width: 50%;
+      max-width: 600px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      position: relative;
+    }
+
+    .chat-header {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: #0277bd;
+      margin-bottom: 10px;
+    }
+
+    .messages {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 15px;
+      border: 1px solid #0277bd;
+      border-radius: 10px;
+      background-color: #f1f8e9;
+      overflow-y: auto;
+      margin-bottom: 15px;
+    }
+
+    .messages.empty::after {
+      content: 'No messages yet';
+      color: #90a4ae;
+      font-size: 16px;
+      align-self: center;
+    }
+
+    .message {
+      margin-bottom: 10px;
+      max-width: 100%;
+    }
+
+    .message.sent {
+      align-self: flex-start;
+    }
+
+    .message.received {
+      align-self: flex-start;
+    }
+
+    .message .username {
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #01579b;
+    }
+
+    .message .text {
+      padding: 10px;
+      border-radius: 10px;
+      background-color: #e0f7fa;
+      font-size: 14px;
+      word-wrap: break-word;
+      max-width: 100%;
+    }
+
+    .message.sent .text {
+      background-color: #81d4fa;
+    }
+
+    .message.received .text {
+      background-color: #b3e5fc;
+    }
+
+    .input-container {
+      display: flex;
+    }
+
+    .input-container input {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #0277bd;
+      border-radius: 10px;
+      outline: none;
+    }
+
+    .input-container button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      background-color: #0277bd;
+      color: white;
+      border-radius: 10px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+
+    .input-container button:hover {
+      background-color: #01579b;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      <%= otherUserName %>
+    </div>
+    <div class="messages empty" id="messages"></div>
+    <div class="input-container">
+      <input type="text" id="messageInput" placeholder="Type a message..." onkeydown="handleKeyPress(event)">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"
+    integrity="sha512-luMnTJZ7oEchNDZAtQhgjomP1eZefnl82ruTH/3Oj/Yu5qYtwL7+dVRccACS/Snp1lFXq188XFipHKYE75IaQQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+    const socket = io({
+      query: {
+        currentUser: '<%= currentUser %>'
+      }
+    });
+
+    const roomID = '<%= chatID %>';
+    console.log(roomID);
+
+    // Mesajları yükleme
+    socket.emit('loadMessages', '<%= otherUserName %>');
+    socket.emit('joinroom', roomID);
+
+    // Geçmiş mesajları yükleyip ekranda gösterme
+    socket.on('previousMessages', (messages) => {
+      const messageContainer = document.getElementById('messages');
+      if (messages.length > 0) {
+        messageContainer.classList.remove('empty');
+        messages.forEach((message) => {
+          addMessageToUI(message);
+        });
+      }
+      messageContainer.scrollTop = messageContainer.scrollHeight;
+    });
+
+    // Mesaj gönderme
+    function sendMessage() {
+      const messageInput = document.getElementById('messageInput');
+      const message = messageInput.value.trim();
+      if (message !== '') {
+        socket.emit('chatMessage', {
+          receiver: '<%= otherUserName %>',
+          text: message
+        });
+        messageInput.value = '';
+      }
+    }
+
+    // Enter tuşuna basıldığında mesaj gönderme
+    function handleKeyPress(event) {
+      if (event.key === 'Enter') {
+        sendMessage();
+      }
+    }
+
+    // Mesajları UI'ya ekleme
+    socket.on('chatMessage', (message) => {
+      addMessageToUI(message);
+    });
+
+    function addMessageToUI(message) {
+      const messageContainer = document.getElementById('messages');
+      messageContainer.classList.remove('empty');
+      const newMessage = document.createElement('div');
+      newMessage.classList.add('message');
+      if (message.sender === '<%= currentUser %>') {
+        newMessage.classList.add('sent');
+      } else {
+        newMessage.classList.add('received');
+      }
+      newMessage.innerHTML = `
+        <div class="username">${message.sender}:</div>
+        <div class="text">${message.text}</div>
+      `;
+      messageContainer.appendChild(newMessage);
+      messageContainer.scrollTop = messageContainer.scrollHeight;
+    }
+  </script>
+</body>
+
+</html>

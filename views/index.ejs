@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="messages">
+        <p></p>
+    </div>
+
+    <form id="messageBox">
+        <input type="text" id="message" placeholder="Type a message">
+        <input type="button" id="button" placeholder="Send" value="Send">
+    </form>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"></script>
+    <script>
+        const message = document.getElementById("message");
+        const button = document.getElementById("button");
+        const messageList = document.getElementById("messages");
+        const socket = io();
+
+        const sender = '<%= username %>';
+        
+
+        button.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (message.value) {
+                const msgData = {
+                    sender,
+                    message: message.value
+                }
+                socket.emit("chat message", msgData)
+            }
+        });
+
+        socket.on("chat message", (data) => {
+            const { username, message } = data;
+            messageList.innerHTML += `<li><strong>${username}</strong>: ${message}</li>`;
+            message.value = '';
+        });
+
+    </script>
+</body>
+
+</html>

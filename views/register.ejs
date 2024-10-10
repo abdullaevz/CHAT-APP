@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        h2 {
+            margin-bottom: 30px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .button {
+            padding: 10px 20px;
+            background-color: #008CBA;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .login-container {
+            margin-top: 20px;
+        }
+
+        .login-container p {
+            display: inline;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Register</h2>
+    <form action="/register" method="post" enctype="application/x-www-form-urlencoded">
+        <input type="text" name="name" id="name" placeholder="Name">
+        <input type="text" name="surname" id="surname" placeholder="Surname">
+        <input type="text" name="username" id="username" placeholder="Username">
+        <input type="email" name="mail" id="mail" placeholder="Mail">
+        <input type="password" name="password" id="password" placeholder="Password">
+        <input type="submit" id="button" value="Submit">
+
+        <% if (message) { %>
+            <p class="error-message"><%= message %></p>
+            <% } %>
+    </form>
+
+    <div class="login-container">
+        <p>If you have an account</p>
+        <a href="/login" class="button">Login</a>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
+    <script>
+
+        // document.getElementById("button").addEventListener("click", function(e) {
+        //     e.preventDefault();
+        // });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications</title>
+    <style>
+        /* Your existing CSS styles */
+        body {
+            background-color: #e0f7fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .search-bar {
+            margin-top: 20px;
+            width: 300px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .inbox-container {
+            text-align: center;
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 600px;
+            /* Increased width for wider message bar */
+            margin-top: 20px;
+        }
+
+        .inbox-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #0077cc;
+            margin-bottom: 10px;
+        }
+
+        .message-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .message-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f0f8ff;
+            margin: 5px 0;
+            padding: 15px;
+            /* Increased padding for better spacing */
+            border-radius: 5px;
+            cursor: default;
+            width: 100%;
+            /* Ensures it stretches to the container's width */
+            box-sizing: border-box;
+        }
+
+        .delete-btn,
+        .accept-btn {
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .delete-btn {
+            background-color: #ff4d4d;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background-color: #e60000;
+        }
+
+        .accept-btn {
+            background-color: #4caf50;
+            color: white;
+            margin-left: 10px;
+            /* Space between delete and accept buttons */
+        }
+
+        .accept-btn:hover {
+            background-color: #388e3c;
+        }
+
+        .logged-in-user {
+            font-size: 18px;
+            color: #0077cc;
+            cursor: pointer;
+        }
+
+        .logged-in-user:hover {
+            text-decoration: underline;
+        }
+
+        .settings-logout {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .settings-logout a {
+            text-decoration: none;
+            color: #0077cc;
+            font-size: 18px;
+        }
+
+        .settings-logout a:hover {
+            text-decoration: underline;
+        }
+
+        .settings-icon,
+        .logout-icon {
+            font-size: 24px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Search Bar<div class="search-bar">
+        <form id="form" action="/add-user" method="POST" enctype="application/x-www-form-urlencoded">
+            <input type="text" id="search-bar" name="query" placeholder="Add user...">
+        </form>
+    </div> -->
+
+
+    <!-- Inbox Container -->
+    <div class="inbox-container">
+        <div class="inbox-header">
+            Notifications - <span class="logged-in-user" onclick="window.location.href='/profile'">
+                <%= loggedUser %>
+            </span>
+            <!-- Notification Button -->
+            <button class="notification-btn" onclick="window.open('/notifications/<%= logID %>', '_blank')">🔔
+                Notification</button>
+        </div>
+
+        <!-- Message List -->
+        <ul class="message-list">
+            <% nameList?.forEach(function(sender) { %>
+                <li>
+                    <%= sender %> wants to be friend with you
+                        <div>
+                            <button class="delete-btn" onclick="deleteMessage('<%= sender %>')">Delete</button>
+                            <button class="accept-btn" onclick="acceptMessage('<%= sender %>')">Accept</button>
+                        </div>
+                </li>
+                <% }); %>
+        </ul>
+    </div>
+
+    <!-- Settings and Logout -->
+    <div class="settings-logout">
+        <a href="/settings/<%= logID %>" class="settings-icon">⚙️ Settings</a>
+        <a href="/logout" class="logout-icon">🚪 Log out</a>
+    </div>
+
+    <script>
+        function deleteMessage(sender) {
+            fetch('/reject-request', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ log_id: "<%= logID %>", sender , request_status:false }),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Notification successfully deleted!');
+                        location.reload();
+                    } else {
+                        alert('Something went wrong, notification not deleted!');
+                    }
+                });
+        }
+
+        function acceptMessage(sender) {
+            fetch('/accept-request', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ log_id: "<%= logID %>", sender ,request_status:true}),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Message accepted!');
+                        location.reload();
+                    } else {
+                        alert('Something went wrong, message not accepted!');
+                    }
+                });
+        }
+
+        // document.getElementById("form").addEventListener("submit", (e) => {
+        //     const username = document.getElementById("search-bar");
+
+        //     e.preventDefault();
+        //     if (username.value) {
+        //         fetch('/add-user', {
+        //             method: 'POST',
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //             },
+        //             body: JSON.stringify({ my_id: "<%= logID %>", username: username.value }),
+        //         })
+        //             .then(response => {
+        //                 if (response.ok) {
+        //                     alert('Friend request sent');
+        //                     location.reload();
+        //                 } else {
+        //                     alert('Something went wrong, try again');
+        //                 }
+        //             });
+        //     }
+        // });
+    </script>
+</body>
+
+</html>

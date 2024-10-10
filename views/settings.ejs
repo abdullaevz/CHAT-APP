@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            padding-top: 50px;
+            display: flex;
+            justify-content: flex-start;
+            /* Formu sola çekmek */
+        }
+
+        .profile-info {
+            margin-right: 30px;
+            /* Form ile profil bilgileri arasındaki boşluk */
+            text-align: left;
+        }
+
+        .profile-info h2 {
+            font-size: 24px;
+            /* İsim ve soy isim büyük */
+            color: #333;
+            margin: 0;
+        }
+
+        .profile-info p {
+            font-size: 14px;
+            /* ID ve mail daha küçük */
+            color: #666;
+            margin: 5px 0;
+        }
+
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #1e90ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #4682b4;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="profile-info">
+            <h2>
+                <%= user.name %>
+                    <%= user.surname %>
+            </h2> <!-- İsim ve soy isim büyük yazı -->
+            <p>ID: <%= user._id %>
+            </p> <!-- Kullanıcı ID'si -->
+            <p>Email: <%= user.mail %>
+            </p> <!-- Mevcut e-posta -->
+        </div>
+        <form id="updateForm" action="/update/<%= user._id %>" method="POST">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="<%= user.mail %>">
+            </div>
+            <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" name="firstName" placeholder="<%= user.name %>">
+            </div>
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" name="lastName" placeholder="<%= user.surname %>">
+            </div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="<%= user.username %>">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="New password">
+            </div>
+            <button id="butt" type="submit">Change</button>
+        </form>
+
+    </div>
+    <script>
+        document.getElementById('updateForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Formun otomatik olarak gönderilmesini engelle
+            const formData = {};
+            const email = document.getElementById('email').value;
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (email !== '') formData.email = email;
+            if (firstName !== '') formData.name = firstName;
+            if (lastName !== '') formData.surname = lastName;
+            if (username !== '') formData.username = username;
+            if (password !== '') formData.password = password;
+
+            // Formda gönderilecek veri varsa POST isteği yap
+            if (Object.keys(formData).length > 0) {
+                alert("Data updated");
+                fetch(`/update/<%= user._id %>`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                })
+                    .then(response => {
+                        response.json();
+                        
+
+                    })
+                    .then(data => {
+                        // Başarılı bir POST işlemi yapıldığında işlem burada yapılabilir
+                        console.log('Success:', data);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            } else {
+                alert('Please fill in the form fields.');
+
+
+            }
+        });
+
+
+    </script>
+</body>
+
+</html>
