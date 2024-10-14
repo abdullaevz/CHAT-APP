@@ -4,6 +4,8 @@ import bcrypt from "bcrypt";
 
 export const regUser = async (req, res) => {
     const { username, password, surname, name, mail } = req.body;
+    const lowerUsername = String(username).toLowerCase();
+    const lowerMail = String(mail).toLowerCase();
     const checkMail = await userModel.findOne({ mail });
     const checkUsername = await userModel.findOne({ username });
 
@@ -11,7 +13,7 @@ export const regUser = async (req, res) => {
         if (checkMail === null && checkUsername === null) {
             const hashedPassword = await bcrypt.hash(password, 10);
             userModel.create({
-                name, surname, password: hashedPassword, mail, username
+                name, surname, password: hashedPassword, mail: lowerMail, username: lowerUsername
             }).then(() => {
                 res.redirect("/login");
             });
