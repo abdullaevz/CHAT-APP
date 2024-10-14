@@ -24,19 +24,22 @@ export const userLogin = async (req, res) => {
             }
             else {
                 res.render(
-                    'login', { loginError: true }
+                    'login', { message: "Invalid password" }
                 );
 
                 console.log("Invalid pass");
 
             }
         } else {
+            res.render(
+                'login', { message: "User doesnt exists.Please register" }
+            );
             console.log("user not found please register");
 
         }
     } else {
         res.render(
-            'login', { loginError: true }
+            'login', { message:"Invalid fields" }
         );
 
     }
