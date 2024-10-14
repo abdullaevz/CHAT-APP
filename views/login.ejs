@@ -61,8 +61,8 @@
 
         <input type="submit" id="button" value="Submit">
 
-        <% if (typeof loginError !== 'undefined' && loginError === true) { %>
-            <p class="error-message">Wrong fields</p>
+       <% if (message) { %>
+            <p class="error-message"><%=message%></p>
         <% } %>
     </form>
 
