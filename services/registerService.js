@@ -17,8 +17,13 @@ export const regUser = async (req, res) => {
             });
 
 
-        } else {
-            res.render('register', { message: "User already exists" });
+        } else if (checkMail) {
+            res.render('register', { message: "This email is already exists" });
+
+            console.log("user already exists");
+
+        } else if (checkUsername) {
+            res.render('register', { message: "This username is already exists" });
 
             console.log("user already exists");
 
