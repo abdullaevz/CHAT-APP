@@ -42,7 +42,7 @@ appRoute.get("/register", (req, res) => {
 
 appRoute.get("/login", (req, res) => {
     res.render(
-        'login', { loginError: false }
+        'login', { message:"" }
     );
 });
 
